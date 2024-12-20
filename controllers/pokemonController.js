@@ -44,29 +44,54 @@ exports.getPokemonByPokemonid = async (req,res)=>{
 }
 
 exports.catchpokemonByPokemonid = async (req,res)=>{
-     
+    const pokemon_id = req.params.pokemon_id;
+    const pokemonStatusId = req.body.pokemon_id;
+    if(pokemon_id==pokemonStatusId){
     try {
-        const pokemon_id = req.params.pokemon_id;
-        const pokemonstatusid = 
-        const
-        const
+        const pokemonstatusview = req.body.view;
+        const pokemonstatuscatch = req.body.catch;
         let pokemon = await StatusPokemon.findOne({"pokemon_id":pokemon_id})
-        if(!pokemon){
-            return res.status(404).json({message:"Bad request, pokemon no view"})
-        }    
+        if (!pokemon){
+            return res.status(400).json({message:"Bad request, pokemon not view yet"})
+        }   
+        else if(pokemon.view){
+            return res.status(400).json(pokemon)
+        } 
         else if(pokemon.catch){               
-                return res.status(200).json(pokemon)
+                return res.status(400).json(pokemon)
         }else{
             pokemon = await StatusPokemon.findOneAndReplace({"pokemon_id":pokemon_id},{
             pokemon_id: pokemon_id,
             view: true,
             catch: true,
             },{new:true}    
-        )
+            )
             return res.status(200).json(pokemon)
-        }            
+        }         
     } catch (error) {
         console.error(error)
         return res.status(500).json({error})
+    }
+    }else{
+     return res.status(400).json({message:"bad request, pokemon_id in body diferent pokemon_id in params"})
+    }
+}
+
+exports.inteampokemonByPokemonId = async (req,res)=>{
+    try {
+        const pokemon_id = req.params.pokemon_id
+        const pokemon = await StatusPokemon.findOne( {"pokemon_id":pokemon_id})
+        const newpokemon = await StatusPokemon.findOneAndReplace
+        ({"pokemon_id": pokemon_id},{
+           pokemon_id: pokemon_id,
+           view: true,
+           catch: true,
+           in_team:!pokemon.in_team
+        },{new:true})
+        return res.status(200).json(newpokemon)
+    }catch (error) {
+        console.error(error)
+        return res.status(500).json({error}) 
+
     }
 }
